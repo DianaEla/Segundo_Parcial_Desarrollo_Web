@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Document</title>
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-	<link rel="stylesheet" href="css/login.css">
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
-	<form class="form-signin text-center">
+  <form class="form-signin text-center">
   <img class="mb-4" src="../img/logotipo.png" alt="logotipo">
   <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
   <label for="inputEmail" class="sr-only">Email address</label>
@@ -21,7 +21,7 @@
   </div>
   <button class="btn btn-lg btn-primary btn-block" type="button" id="buttonSign">Iniciar</button>
   <p class="mt-5 mb-3 text-muted">&copy; 2017-2019</p>
-	</form>
+  </form>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
@@ -39,14 +39,10 @@
       "usuario":correo,
       "password":password
     };
-    if (correo == ""|| password == ""){
-      alert("Inserta usuario y contraseña codigo error:03");
-    }
-    else{
-    //$.(); Sintaxis de jQuery con Ajax
 
-    $.post("includes/_funciones.php", obj, function(){});
-     }
+    $.post('includes/_funciones.php', obj, function(e){
+      alert(e);
+    });
 
     //Enviar a validar esos valores
     //En caso de ser válido, redireccionar a usuarios.php

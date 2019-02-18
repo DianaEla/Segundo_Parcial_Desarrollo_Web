@@ -23,24 +23,24 @@ function login(){
 
 	$consulta = "SELECT * FROM usuarios WHERE correo_usr = '$correo'";
 	$resultado = mysqli_query($mysqli, $consulta);
-	$fila = mysqli_num_rows($resultado);
+	$fila = $resultado->fetch_assoc();
 	if($fila == 0)
 	{
 		echo "El usuario no exite [ERROR]";
 		}
 
 		//Si el usuario existe, consultar que el password sea correcto
-		else if ($fila["password"] != $password)
+		else if ($fila["pswd_usr"] != $password)
 
 		{
-			$consulta = "SELECT *FROM usuario WHERE correo_usr = '$correo' AND password = '$password'";
-			$resultado = $mysqli->query($consulta);
+			$consulta = "SELECT *FROM usuarios WHERE correo_usr = '$correo' AND pswd_usr = '$password'";
+			$resultado = mysqli_query($mysqli, $consulta);
 			$fila = $resultado->fetch_assoc();
 			//Si el password no es correcto, imprimir 0
 			echo "El password es incorrecto [ERROR]";
 		}	
 		
-		else if($correo == $fila["correo_usr"] && $password == $fila["password"])
+		else if($correo == $fila["correo_usr"] && $password == $fila["pswd_usr"])
 		{
 			//Si el password es correcto, imprimir 1
 			echo "El usuario y password son correctos [ACESSO]";
