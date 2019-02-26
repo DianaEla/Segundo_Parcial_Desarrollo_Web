@@ -13,6 +13,14 @@ switch ($_POST["accion"]) {
   insertar_usuarios();
 
   break;
+  case "consultar_team":
+  consultar_team();
+
+  break;
+  case "insertar_team":
+  insertar_team();
+
+  break;
 
   default:
     # code...
@@ -77,5 +85,30 @@ $num_rows = $result->num_rows;
         echo"0";
       }
     }
+
+    function consultar_team(){
+  global $mysqli;
+  $consulta = "SELECT * FROM team";
+  $resultado = mysqli_query($mysqli, $consulta);
+  $arreglo = [];
+  while($fila = mysqli_fetch_array($resultado)){
+    array_push($arreglo, $fila);
+  }
+  echo json_encode($arreglo); //Imprime el JSON ENCODEADO
+}
+function insertar_team(){
+  global $mysqli;
+  $team_img = $_POST["imagen"];
+  $team_name = $_POST["nombre"]; 
+  $team_position = $_POST["cargo"];
+  $team_description = $_POST["descripcion"];
+  $consulta = "INSERT INTO team VALUES('','$team_img','$team_name','$team_position','$team_description')";
+  $resultado = mysqli_query($mysqli, $consulta);
+  $arreglo = [];
+  while($fila = mysqli_fetch_array($resultado)){
+    array_push($arreglo, $fila);
+  }
+  echo json_encode($arreglo); //Imprime el JSON ENCODEADO
+}
     
 ?>
