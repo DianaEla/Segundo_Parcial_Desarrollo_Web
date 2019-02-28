@@ -173,8 +173,8 @@
           <td>${e.nombre_usr}</td>
           <td>${e.telefono_usr}</td>
           <td>
-          <a href="#" data-id="${e.id_usr}">Editar</a>
-          <a href="#" data-id="${e.id_usr}">Eliminar</a>
+          <a href="#" data-id="${e.id_usr}" class="editar_registro">Editar</a>
+          <a href="#" data-id="${e.id_usr}" class="eliminar_registro">Eliminar</a>
           </td>
           </tr>
           `;
@@ -194,7 +194,7 @@
     $("#guardar_datos").click(function(respuesta){
       let nombre = $("#nombre").val();
       let correo = $("#correo").val();
-      let contraseña = $("#contraseña").val()
+      let contraseña = $("#contraseña").val();
       let telefono = $("#telefono").val();
       let obj ={
         "accion" : "insertar_usuarios",
@@ -202,8 +202,7 @@
         "correo" : correo,
         "contraseña" : contraseña,
         "telefono" : telefono
-      }
-
+      };
       $("#form_data").find("input").each(function(){
         $(this).removeClass("has-error");
         if($(this).val() != ""){
@@ -217,19 +216,36 @@
 $.post("includes/_funciones.php", obj, function(verificado){ 
       if (verificado != "" ) {
        alert("Usuario Registrado");
-        }
-      else {
+        } else {
         alert("Usuario NO Registrado");
       } 
-     }
-     );
-
+     });
     });
 
+    $('#list-usuarios').on("click",".eliminar_registro",function(e){
+        e.preventDefault();
+        let confirmacion = confirm("Desea eliminar este registro?");
+        if (confirmacion) {
+          let id = $(this).data('id'),
+          obj = {
+            "accion":"eliminar_registro",
+            "registro":id
+          };
+          $.post("includes/_funciones.php",obj,function(respuesta){
+            alert(respuesta);
+            consultar();
+          });
+        }else{
+          alert("El registro no se ha eliminado");
+        }
+      });
 
 
 
 
+
+
+    
 
 
 

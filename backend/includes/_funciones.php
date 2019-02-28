@@ -21,6 +21,15 @@ switch ($_POST["accion"]) {
   insertar_team();
 
   break;
+  case "eliminar_registro":
+  eliminar_usuarios($_POST["registro"]);
+
+  break; 
+  case 'editar_registro':
+    editar_usuarios($registro= $_POST["registro"]);
+     
+
+  break;
 
   default:
     # code...
@@ -75,14 +84,14 @@ function login(){
       $contraseña= $_POST["contraseña"];
       $telefono= $_POST["telefono"];
 
-      global $mysqli;
-     $consulta = "INSERT INTO usuarios VALUES('','$nombre','$correo','$contraseña', $telefono, '1')";
-      $result = $mysqli->query($consulta);
-$num_rows = $result->num_rows;
-      if ($num_rows > 0){
-      echo "1";
-      } else {
-        echo"0";
+    global $mysqli;
+    $consulta = "INSERT INTO usuarios VALUES('','$nombre','$correo','$contraseña', '$telefono', '1')";
+    $result = $mysqli->query($consulta);
+    $num_rows = $result->num_rows;
+    if ($num_rows > 0){
+    echo "1";
+    } else {
+    echo"0";
       }
     }
 
@@ -110,5 +119,24 @@ function insertar_team(){
   }
   echo json_encode($arreglo); //Imprime el JSON ENCODEADO
 }
+
+
+
+function eliminar_usuarios($id){
+  global $mysqli;
+  $query = "DELETE FROM usuarios WHERE id_usr = $id";
+  $resultado = mysqli_query($mysqli, $query);
+  if ($resultado) {
+    echo "Se eliminó correctamente";
+  } else {
+    echo "Se generó un error, intenta nuevamente";
+  }
+}
+
+
+
+
+
     
+
 ?>
