@@ -242,11 +242,23 @@ $.post("includes/_funciones.php", obj, function(verificado){
 
 
 
+    $("#list-usuarios").on("click",".editar_registro", function(e){
+      e.preventDefault();
+      change_view('insert_data');
+       let id = $(this).data('id');
 
-
-
+       obj = {
+        "action" : "editar_registro",
+        "registro" : id,
+         // "nombre" : nombre,
+         //  "telefono" : telefono,
+         //  "correo" : correo,
+         //  "contraseña" : contraseña
+       };
+       $.post('includes/_funciones.php', obj, function(respuesta) {
+       });
+     });
     
-
 
 
     $("#main").find(".cancelar").click(function(){
