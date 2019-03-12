@@ -27,8 +27,11 @@ switch ($_POST["accion"]) {
   break; 
   case 'editar_registro':
     editar_usuarios($registro= $_POST["registro"]);
-     
 
+break;
+    //**CARGA FOTO**//
+  case 'carga_foto':
+  carga_foto();
   break;
 
   default:
@@ -113,11 +116,6 @@ function insertar_team(){
   $team_description = $_POST["descripcion"];
   $consulta = "INSERT INTO team VALUES('','$team_img','$team_name','$team_position','$team_description')";
   $resultado = mysqli_query($mysqli, $consulta);
-  $arreglo = [];
-  while($fila = mysqli_fetch_array($resultado)){
-    array_push($arreglo, $fila);
-  }
-  echo json_encode($arreglo); //Imprime el JSON ENCODEADO
 }
 
 
@@ -134,9 +132,28 @@ function eliminar_usuarios($id){
 }
 
 
+function carga_foto(){
+  if (isset($_FILES["foto"])) {
+    $file = $_FILES["foto"];
+    $nombre = $_FILES["foto"]["name"];
+    $temporal = $_FILES["foto"]["tmp_name"];
+    $tipo = $_FILES["foto"]["type"];
+    $tam = $_FILES["foto"]["size"];
+    $dir = "../../img/imagenes_insertadas/";
+    $respuesta = [
+      "archivo" => "../img/imagenes_insertadas/error.jpg",
+      "status" => 0
+    ];
+    if(move_uploaded_file($temporal, $dir.$nombre)){
+      $respuesta["archivo"] = "../img/imagenes_insertadas/".$nombre;
+      $respuesta["status"] = 1;
+    }
+    echo json_encode($respuesta);
+  }
+}
+
 
 
 
     
-
 ?>

@@ -101,13 +101,18 @@
           </table>
         </div>
         <div id="insert_data" class="view">
-          <form action="#" id="form_data">
+          <form action="#" id="form_data" enctype="multipart/form-data">
             <div class="row">
               <div class="col">
                 <div class="form-group">
-                  <label for="imagen"><b>Ubicación de las Imágenes</b></label>
-                  <input type="file" id="imagen" name="imagen" accept="img/png, img/jpg" class="form-control">
+                  <!--<label for="imagen"><b>Ubicación de las Imágenes</b></label>
+                  <input type="file" id="imagen" name="imagen" accept="img/png, img/jpg" class="form-control">-->
+                  <input type="file" id="foto" name="foto">
+                  <input type="hidden" id="ruta" name="ruta" readonly="readonly">
                 </div>
+                 <div id="preview"></div>
+              </div>
+
                 <div class="form-group">
                   <label for="nombre"><b>Nombre</b></label>
                   <input type="text" id="nombre" name="nombre" class="form-control">
@@ -122,7 +127,7 @@
                   <input type="text" id="descripcion" name="descripcion" class="form-control">
                 </div>
               </div>
-            
+            <!--</div>-->
             <div class="row">
               <div class="col">
                 <button type="button" class="btn btn-success" id="guardar_datos">Guardar</button>
@@ -175,11 +180,9 @@
       consultar();
       change_view();
     });
-
     $("#nuevo_registro").click(function(){
       change_view('insert_data');
     });
-
     $("#guardar_datos").click(function(respuesta){
       let imagen = $("#imagen").val();
       let nombre = $("#nombre").val();
@@ -192,7 +195,6 @@
         "cargo" : cargo,
         "descripcion" : descripcion
       }
-
       $("#form_data").find("input").each(function(){
         $(this).removeClass("has-error");
         if($(this).val() != ""){
@@ -213,6 +215,35 @@
      }
      );
     });
+
+
+    $("#foto").on("change", function (e) {
+      let formDatos = new FormData($("#form_data")[0]);
+      formDatos.append("accion", "carga_foto");
+      $.ajax({
+        url: "includes/_funciones.php",
+        type: "POST",
+        data: formDatos,
+        contentType: false,
+        processData: false,
+        success: function (datos) {
+          let respuesta = JSON.parse(datos);
+          if(respuesta.status == 0){
+            alert("No se cargó la foto");
+          }
+          let template = `
+          <img src="${respuesta.archivo}" alt="" class="img-fluid" />
+          `;
+          $("#ruta").val(respuesta.archivo);
+          $("#preview").html(template);
+        }
+      });
+    });
+
+
+
+
+
     $("#main").find(".cancelar").click(function(){
       change_view();
       $("#form_data")[0].reset();
