@@ -1,4 +1,11 @@
-<!doctype html>
+<?php
+  session_start();
+  error_reporting(0);
+  $varsesion = $_SESSION['usuario'];
+  if (isset($varsesion)){
+?>
+
+  <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -212,6 +219,12 @@
           return false;
         }
       });
+
+    if($(this).data("editar") == 1) {
+    obj["accion"] = "editar_registro";
+    obj["id"] = $(this).data('id');
+    $(this).text("Guardar").removeData("editar").removeData("id");
+   }
      
 $.post("includes/_funciones.php", obj, function(verificado){ 
       if (verificado != "" ) {
@@ -248,14 +261,11 @@ $.post("includes/_funciones.php", obj, function(verificado){
       let id = $(this).data('id');
 
        obj = {
-        "action" : "editar_registro",
+        "accion" : "editar_team",
         "registro" : id, 
-        // "nombre" : nombre,
-         //  "telefono" : telefono,
-         //  "correo" : correo,
-         //  "contraseña" : contraseña
        };
        $.post('includes/_funciones.php', obj, function(respuesta) {
+        alert(respuesta)
        });
      });
       
@@ -268,3 +278,11 @@ $.post("includes/_funciones.php", obj, function(verificado){
   </script>
 </body>
 </html>
+
+<?php 
+  }
+  else 
+  {
+header("Location:index.html");
+  }
+?>

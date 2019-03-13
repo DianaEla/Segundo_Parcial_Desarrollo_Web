@@ -1,9 +1,11 @@
 <?php
 require_once '_db.php';
 switch ($_POST["accion"]) {
+
   case "login":
-    login();
-    break;
+  login();
+  break;
+
   case "consultar_usuarios":
   consultar_usuarios();
   break;
@@ -24,9 +26,22 @@ switch ($_POST["accion"]) {
   case "eliminar_registro":
   eliminar_usuarios($_POST["registro"]);
 
+    break;
+  case "eliminar_team":
+  eliminar_team($_POST["id"]);
+
   break; 
   case 'editar_registro':
-    editar_usuarios($registro= $_POST["registro"]);
+    editar_usuarios($registro= $_POST["id"]);
+
+  break; 
+  case 'editar_team':
+    editar_team($registro= $_POST["id"]);
+
+    break; 
+  case 'consultar_miembro':
+    consultar_miembro($registro= $_POST["id"]);
+  
 
 break;
     //**CARGA FOTO**//
@@ -50,37 +65,31 @@ break;
 
     //-------------------------------------------------------------------------------
 }
-function login(){
-  //Conectar con la base de datos
+
+  function login(){
+    // Conectar a la base de datos
   global $mysqli;
-  $correo= $_POST["usuario"];
-  $password = $_POST["password"];
-  //echo "Tu usuario es: ".$_POST["usuario"]." y tu password es: ".$_POST["password"];
-  //Conectar con la base de datos
-  
-  $consulta = "SELECT * FROM usuarios WHERE correo_usr = '$correo'";
+    // Si usuario y contraseña están vacíos imprimir 3
+  $correo = $_POST['correo']; 
+  $password = $_POST['password'];
+  $consulta = "SELECT * FROM usuarios WHERE correo_usr ='$correo'";
   $resultado = mysqli_query($mysqli, $consulta);
-  $fila = $resultado->fetch_assoc();
-  if($fila == 0)
-  {
-    echo "El usuario no exite [ERROR]";
-    }
-    //Si el usuario existe, consultar que el password sea correcto
-    else if ($fila["pswd_usr"] != $password)
-    {
-      $consulta = "SELECT *FROM usuarios WHERE correo_usr = '$correo' AND pswd_usr = '$password'";
-      $resultado = mysqli_query($mysqli, $consulta);
-      $fila = $resultado->fetch_assoc();
-      //Si el password no es correcto, imprimir 0
-      echo "El password es incorrecto [ERROR]";
-    } 
+  $fila = mysqli_fetch_array($resultado);
+  if($fila["pswd_usr"] == "$password" ){
     
-    else if($correo == $fila["correo_usr"] && $password == $fila["pswd_usr"])
-    {
-      //Si el password es correcto, imprimir 1
-      echo "El usuario y password son correctos [ACESSO]";
-    }
-}
+    session_start();
+        error_reporting(0);
+        $_SESSION['usuario'] = $correo;
+  
+        echo "1"; 
+      }
+    else 
+      {
+        echo "Error en la contraseña o usuario";
+      }
+  }
+
+
    function insertar_usuarios(){
       $nombre= $_POST["nombre"];
       $correo= $_POST["correo"];
@@ -108,6 +117,15 @@ function login(){
   }
   echo json_encode($arreglo); //Imprime el JSON ENCODEADO
 }
+
+    function consultar_miembro($id){
+  global $mysqli;
+  $consulta = "SELECT * FROM team WHERE team_id = $id";
+  $resultado = mysqli_query($mysqli, $consulta);
+  $fila = mysqli_fetch_array($resultado);
+  echo json_encode($fila); //Imprime el JSON ENCODEADO
+}
+
 function insertar_team(){
   global $mysqli;
   $team_img = $_POST["imagen"];
@@ -116,9 +134,13 @@ function insertar_team(){
   $team_description = $_POST["descripcion"];
   $consulta = "INSERT INTO team VALUES('','$team_img','$team_name','$team_position','$team_description')";
   $resultado = mysqli_query($mysqli, $consulta);
+    if ($resultado) {
+    echo "Se agrego correctamente";
+  } else {
+    echo "Se generó un error, intenta nuevamente";
+  }
+
 }
-
-
 
 function eliminar_usuarios($id){
   global $mysqli;
@@ -131,6 +153,34 @@ function eliminar_usuarios($id){
   }
 }
 
+function editar_team($id){
+  global $mysqli;
+  extract($_POST);
+  $consulta = "UPDATE team SET team_img = '$imagen', team_name = '$nombre', 
+  team_position = '$cargo', team_description = '$descripcion' WHERE team_id = '$id' ";
+  $resultado = mysqli_query($mysqli, $consulta);
+  if($resultado){
+    echo "Se editó correctamente";
+  }else{
+    echo "Se generó un error, intentalo nuevamente";
+  }
+}
+
+
+
+function eliminar_team($id){
+  global $mysqli;
+  $query = "DELETE FROM team WHERE team_id = $id";
+  $resultado = mysqli_query($mysqli, $query);
+  if ($resultado) {
+    echo "Se eliminó correctamente";
+  } else {
+    echo "Se generó un error, intenta nuevamente";
+  }
+}
+
+
+
 
 function carga_foto(){
   if (isset($_FILES["foto"])) {
@@ -139,13 +189,13 @@ function carga_foto(){
     $temporal = $_FILES["foto"]["tmp_name"];
     $tipo = $_FILES["foto"]["type"];
     $tam = $_FILES["foto"]["size"];
-    $dir = "../../img/imagenes_insertadas/";
+    $dir = "../../img/insertadas/";
     $respuesta = [
-      "archivo" => "../img/imagenes_insertadas/error.jpg",
+      "archivo" => "../img/insertadas/error.jpg",
       "status" => 0
     ];
     if(move_uploaded_file($temporal, $dir.$nombre)){
-      $respuesta["archivo"] = "../img/imagenes_insertadas/".$nombre;
+      $respuesta["archivo"] = "../img/insertadas/".$nombre;
       $respuesta["status"] = 1;
     }
     echo json_encode($respuesta);

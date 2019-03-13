@@ -1,3 +1,10 @@
+<?php
+  session_start();
+  error_reporting(0);
+  $varsesion = $_SESSION['usuario'];
+  if (isset($varsesion)){
+?>
+
 <!Doctype html>
 <html lang="en">
 <head>
@@ -102,22 +109,17 @@
         </div>
         <div id="insert_data" class="view">
           <form action="#" id="form_data" enctype="multipart/form-data">
-            <div class="row">
-              <div class="col">
                 <div class="form-group">
-                  <!--<label for="imagen"><b>Ubicación de las Imágenes</b></label>
-                  <input type="file" id="imagen" name="imagen" accept="img/png, img/jpg" class="form-control">-->
                   <input type="file" id="foto" name="foto">
                   <input type="hidden" id="ruta" name="ruta" readonly="readonly">
                 </div>
+                <div>
                  <div id="preview"></div>
-              </div>
-
+                </div>
                 <div class="form-group">
                   <label for="nombre"><b>Nombre</b></label>
                   <input type="text" id="nombre" name="nombre" class="form-control">
                 </div>
-              </div>
                 <div class="form-group">
                   <label for="cargo"><b>Cargo</b></label>
                   <input type="text" id="cargo" name="cargo" class="form-control">
@@ -125,15 +127,12 @@
                 <div class="form-group">
                   <label for="descripcion"><b>Descripción</b></label>
                   <input type="text" id="descripcion" name="descripcion" class="form-control">
-                </div>
               </div>
-            <!--</div>-->
-            <div class="row">
-              <div class="col">
-                <button type="button" class="btn btn-success" id="guardar_datos">Guardar</button>
-              </div>
+              <button type="button" class="btn btn-success " id="guardar_datos">Guardar</button>
+            </div>
             </div>
           </form>
+        </div>
         </div>
       </main>
     </div>
@@ -167,8 +166,8 @@
           <td>${e.team_position}</td>
           <td>${e.team_description}</td>
           <td>
-          <a href="#" data-id="${e.team_id}">Editar</a>
-          <a href="#" data-id="${e.team_id}">Eliminar</a>
+          <a href="#" data-id="${e.team_id}" class="editar_team">Editar</a>
+          <a href="#" data-id="${e.team_id}" class="eliminar">Eliminar</a>
           </td>
           </tr>
           `;
@@ -184,7 +183,7 @@
       change_view('insert_data');
     });
     $("#guardar_datos").click(function(respuesta){
-      let imagen = $("#imagen").val();
+      let imagen = $("#ruta").val();
       let nombre = $("#nombre").val();
       let cargo = $("#cargo").val()
       let descripcion = $("#descripcion").val();
@@ -204,18 +203,19 @@
           return false;
         }
       });
+
+     if($(this).data("editar") == 1) {
+    obj["accion"] = "editar_team";
+    obj["id"] = $(this).data('id');
+    $(this).text("Guardar").removeData("editar").removeData("id");
+   }
      
       $.post("includes/_funciones.php", obj, function(verificado){ 
-      if (verificado != "" ) {
-       alert("Team Registrado");
-        }
-      else {
-        alert("Team no Registrado");
-      } 
+      
+       alert(verificado);
      }
      );
     });
-
 
     $("#foto").on("change", function (e) {
       let formDatos = new FormData($("#form_data")[0]);
@@ -240,8 +240,44 @@
       });
     });
 
+        $('#list-team').on("click",".eliminar",function(e){
+        e.preventDefault();
+        let confirmacion = confirm("Desea eliminar este registro?");
+        if (confirmacion) {
+          let id = $(this).data('id'),
+          obj = {
+            "accion":"eliminar_team",
+            "id":id
+          };
+          $.post("includes/_funciones.php",obj,function(respuesta){
+            alert(respuesta);
+            consultar();
+          });
+        }else{
+          alert("El registro no se ha eliminado");
+        }
+      });
 
+    $("#list-team").on("click",".editar_team", function(e){
+      e.preventDefault();
+      $("#form_data")[0].reset();
+      change_view('insert_data');
+      let id = $(this).data('id');
 
+       obj = {
+        "accion" : "consultar_miembro",
+        "id" : id, 
+       };
+          $("#guardar_datos").text("Editar").data("editar", 1).data("id", id);
+          $.post("includes/_funciones.php",obj,function(r){
+            $("#ruta").val(r.team_img);
+            $("#nombre").val(r.team_name);
+            $("#cargo").val(r.team_position);
+            $("#descripcion").val(r.team_description);
+          },"JSON");
+
+     });
+     
 
 
     $("#main").find(".cancelar").click(function(){
@@ -252,3 +288,11 @@
   <img src"">
 </body>
 </html>
+
+<?php 
+  }
+  else 
+  {
+header("Location:index.html");
+  }
+?>
